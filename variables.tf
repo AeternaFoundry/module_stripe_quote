@@ -100,5 +100,45 @@ EOT
       destination    = string
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.quotes : (
+        v.automatic_tax == null || (v.automatic_tax.liability == null || (contains(["account", "self"], v.automatic_tax.liability.type)))
+      )
+    ])
+    error_message = "must be one of: \"account\", \"self\""
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.quotes : (
+        v.collection_method == null || (contains(["charge_automatically", "send_invoice"], v.collection_method))
+      )
+    ])
+    error_message = "must be one of: \"charge_automatically\", \"send_invoice\""
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.quotes : (
+        v.invoice_settings == null || (v.invoice_settings.issuer == null || (contains(["account", "self"], v.invoice_settings.issuer.type)))
+      )
+    ])
+    error_message = "must be one of: \"account\", \"self\""
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.quotes : (
+        v.subscription_data == null || (v.subscription_data.billing_mode == null || (v.subscription_data.billing_mode.flexible == null || (v.subscription_data.billing_mode.flexible.proration_discounts == null || (contains(["included", "itemized"], v.subscription_data.billing_mode.flexible.proration_discounts)))))
+      )
+    ])
+    error_message = "must be one of: \"included\", \"itemized\""
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.quotes : (
+        v.subscription_data == null || (v.subscription_data.billing_mode == null || (contains(["classic", "flexible"], v.subscription_data.billing_mode.type)))
+      )
+    ])
+    error_message = "must be one of: \"classic\", \"flexible\""
+  }
 }
 
